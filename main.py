@@ -10,7 +10,6 @@ from texttable import *
 students = []
 provided = {}
 
-# Global menu
 menu = ConsoleMenu("Baza studentów", f"Aktualna ilość studentów w bazie: {len(students)}",
                    exit_option_text="Zakończ program")
 
@@ -42,11 +41,11 @@ def addStudent():
     if "albumnr" not in provided:
         albumnr = input("Podaj numer albumu: ")
         try:
-            for student in students:
-                if int(albumnr) == int(student.albumnr):
-                    print(f"Nr albumu {albumnr} jest już przypisany do studenta {student.name} {student.surname}!")
-                    addStudent()
-                    return
+            f = False
+            if len([stud for stud in students if int(stud.albumnr) == int(albumnr)]) != 0:
+                print(f"Nr albumu {albumnr} ma już przypisanego studenta!")
+                addStudent()
+                return
             provided["albumnr"] = int(albumnr)
         except ValueError:
             addStudent()
@@ -86,17 +85,13 @@ def removeStudent(tablePrinted: bool = False):
     prov = input("Wpisz identyfikator studenta którego chcesz usunąć z bazy: ")
     try:
         studentId = int(prov)
-        found = 0
-        for student in students:
-            if int(student.id) == studentId:
-                found = 1
-                break
-        if not found:
+        searchArr = [stud for stud in students if int(stud.id) == int(studentId)]
+        if len(searchArr) == 0:
             print(f"ERROR: Nie znany identyfikator: {studentId}.")
             removeStudent(True)
             return
-        menu.subtitle = f"Aktualna ilość studentów w bazie: {len(students) - 1}\nSukces: Usunięto studenta {student.name} {student.surname} nr alb.: {student.albumnr}."
-        students.remove(student)
+        menu.subtitle = f"Aktualna ilość studentów w bazie: {len(students) - 1}\nSukces: Usunięto studenta {searchArr[0].name} {searchArr[0].surname} nr alb.: {searchArr[0].albumnr}."
+        students.remove(searchArr[0])
         cClear()
         return
 
